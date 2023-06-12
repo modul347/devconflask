@@ -1,0 +1,34 @@
+version: '3.9'
+
+services:
+  productservice:
+    image: "mcr.microsoft.com/devcontainers/python:0-3.11"
+
+    command: /bin/sh -c "while sleep 1000; do :; done"
+
+    depends_on: 
+      - db
+
+  db:
+    build: 
+      context: ../db
+      dockerfile: DockerfileDb
+
+    command: "--init-file /data/application/init.sql --default-authentication-plugin=mysql_native_password"
+    volumes:
+      - "db-volume:/var/lib/mysql"
+    environment:
+      - MYSQL_ROOT_PASSWORD=password123
+      
+  tool:
+    image: phpmyadmin
+    ports:
+      - "8080:80"
+    environment:
+      - PMA_ARBITRARY=1
+    depends_on: 
+      - db
+
+volumes:
+  db-volume:
+    

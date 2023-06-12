@@ -1,0 +1,34 @@
+version: '3.9'
+
+services:
+  productservice:
+    build: product-service
+    volumes:
+      - "./config:/config"
+    ports: 
+      - "5000:5000"
+    depends_on: 
+      - db
+
+  db:
+    image: mysql
+    command: "--init-file /data/application/init.sql --default-authentication-plugin=mysql_native_password"
+    volumes:
+      - "./db/init.sql:/data/application/init.sql"
+      - "db-volume:/var/lib/mysql"
+    environment:
+      - MYSQL_ROOT_PASSWORD=password123
+      
+  tool:
+    image: phpmyadmin
+    ports:
+      - "8080:80"
+    environment:
+      - PMA_ARBITRARY=1
+    depends_on: 
+      - db
+
+volumes:
+  db-volume:
+
+
